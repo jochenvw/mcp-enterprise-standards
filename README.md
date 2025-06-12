@@ -31,7 +31,7 @@ Here's a visual representation of the workflow:
 ## Pre-reqs
 You can either run the server containerized or non-containerized. That is to host the python server, but you'll also need an OpenAI model endpoint somewhere that semantic kernel can call.
 
-### Non-containerized
+### 1a - Non-containerized
 
 Make sure you have Python and [UV](https://docs.astral.sh/uv/#__tabbed_1_2) installed. In fact [you can let UV install Python for you](https://docs.astral.sh/uv/guides/install-python/).
 
@@ -47,13 +47,13 @@ uv sync
 uv run src/server.py
 ```
 
-### Containerized
+### 1b - Containerized
 
 Assuming you have [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install) installed and [Docker desktop](https://docs.docker.com/desktop/), you'll also need the [DevConatiner extension for VSCode](https://code.visualstudio.com/docs/devcontainers/containers#_installation).
 
 Once you start VSCode in the repository folder, you'll be prompted to restart in DevContainer. Then just use the 'Run MCP server' task to run the server or use the `uv run src/server.py` command.
 
-### LLM endpoint
+### 2 - LLM endpoint
 
 The server uses [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/) to call en LLM endpoint. You'll need to be able to copy the `.env.sample` to `.env` and provide values for:
 
