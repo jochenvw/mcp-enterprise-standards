@@ -1,0 +1,8 @@
+graph TD
+    A["Developer writing code"] -->|"Asks for feedback"| B["GitHub Copilot"]
+    B -->|"Calls"| C["MCP Server"]
+    C -->|"Analyzes code against"| D["Enterprise Standards"]
+    C -->|"Uses"| E["LLM Endpoint"]
+    E -->|"Returns analysis"| C
+    C -->|"Returns feedback"| B
+    B -->|"Suggests improvements"| A 
