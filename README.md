@@ -7,8 +7,6 @@ This project runs an [MCP](https://modelcontextprotocol.io/introduction) meant f
 As an enterprise developer, you're working on some code to deploy within the organization. But you're looking for guidance whether or not this matches enterprise standards, whether you're doing things right, whether you can expose public endpoints etc. 
 
 
-
-
 GitHub co-pilot will give you general suggestions, but to make it fully aware of the context of the org you work for, you can have it reach out to [MCP servers](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for advice. This MCP server can `assess_code_for_enterprise_standards` and give feedback on your code inside the editor and GitHub co-pilot can take this advice and help with refactoring.
 
 ## How does this work under the hood?
@@ -22,9 +20,19 @@ GitHub co-pilot will give you general suggestions, but to make it fully aware of
 
 
 Here's a visual representation of the workflow:
-![MCP Server Workflow](assets/mcp-workflow.mmd)
 ![Screenshot](assets/mcp_tool.jpg)
 
+
+```mermaid
+graph TD
+    A["Developer writing code"] -->|"Asks for feedback"| B["GitHub Copilot"]
+    B -->|"Calls"| C["MCP Server"]
+    C -->|"Analyzes code against"| D["Enterprise Standards"]
+    C -->|"Uses"| E["LLM Endpoint"]
+    E -->|"Returns analysis"| C
+    C -->|"Returns feedback"| B
+    B -->|"Suggests improvements"| A 
+```
 
 # Getting started
 
