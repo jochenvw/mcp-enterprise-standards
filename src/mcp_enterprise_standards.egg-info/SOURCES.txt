@@ -1,8 +1,0 @@
-pyproject.toml
-src/server.py
-src/mcp_enterprise_standards.egg-info/PKG-INFO
-src/mcp_enterprise_standards.egg-info/SOURCES.txt
-src/mcp_enterprise_standards.egg-info/dependency_links.txt
-src/mcp_enterprise_standards.egg-info/requires.txt
-src/mcp_enterprise_standards.egg-info/top_level.txt
-tests/test_assess_code.py

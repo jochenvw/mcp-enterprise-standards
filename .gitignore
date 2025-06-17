@@ -11,3 +11,6 @@ __pycache__/
 .env.test.local
 
 .cursor/
+
+**/**.egg-info/
+**/**.egg-info/*

@@ -57,11 +57,24 @@ async def assess_code_for_enterprise_standards(
 
     # Read the system prompt from the file system_prompt - relative to the current file
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    system_prompt_path = os.path.join(current_dir, "system_prompt.md")
+    prompt_files = {
+        'system_prompt': 'system_prompt.md',
+        'naming_convention': 'naming_convention.md',
+        'shared_resources': 'shared_resources.md',
+        'security_standards': 'security_standards.md'
+    }
     
-    with open(system_prompt_path, "r") as file:
-        system_prompt = file.read()
-
+    prompts = {}
+    for key, filename in prompt_files.items():
+        with open(os.path.join(current_dir, filename), "r") as file:
+            prompts[key] = file.read()
+    
+    system_prompt = prompts['system_prompt'].format(
+        naming_convention=prompts['naming_convention'],
+        shared_resources=prompts['shared_resources'],
+        security_standards=prompts['security_standards']
+    )
+    
     chat_history = ChatHistory()
     chat_history.add_system_message(system_prompt)
     chat_history.add_user_message(code)
