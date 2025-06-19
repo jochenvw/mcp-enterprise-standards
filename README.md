@@ -1,27 +1,37 @@
-# MCP server for enterprise standards
+# 🧠 MCP Server for Enterprise Standards
 
-This project runs an [MCP](https://modelcontextprotocol.io/introduction) meant for code validation and so it can be used by code-editors or IDEs that can leverage MCP servers (e.g. VSCode, Cursor etc.)
+This project runs an [MCP (Model Context Protocol)](https://modelcontextprotocol.io/introduction) server designed for **enterprise code validation**. It integrates with editors like **VS Code** and **Cursor** to provide tailored feedback inside your IDE — based on your **organization's specific standards**.
 
-## Here's the scenario
+---
 
-As an enterprise developer, you're working on some code to deploy within the organization. But you're looking for guidance whether or not this matches enterprise standards, whether you're doing things right, whether you can expose public endpoints etc. 
+## 💼 Why Use This?
 
+As an enterprise developer, you often wonder:
 
-GitHub co-pilot will give you general suggestions, but to make it fully aware of the context of the org you work for, you can have it reach out to [MCP servers](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) for advice. This MCP server can `assess_code_for_enterprise_standards` and give feedback on your code inside the editor and GitHub co-pilot can take this advice and help with refactoring.
+- Am I complying with internal policies?
+- Can I expose this API endpoint?
+- Is this deployment pattern secure or recommended?
 
-## How does this work under the hood?
+GitHub Copilot can help, but **doesn’t understand your enterprise context**. With an MCP server like this one, you can supercharge Copilot with custom logic and internal rules.
 
-1. Your org will have this server `server.py` running somewhere (we can now do this locally for ease of testing)
-2. You're writing some bicep code and looking for feedback
-3. You configure the [MCP server](https://code.visualstudio.com/docs/copilot/chat/mcp-servers) in VSCode
-4. You ask for feedback on the code in GitHub co-pilot agent mode, or nudge it to use the tool
-5. The server will use an LLM endpoint to reason over the code you've written and compare it against enterprise standards
-6. GitHub co-pilot will get the responses and suggest modifying your code to adhere to standards
+🔗 [MCP servers in GitHub Copilot](https://code.visualstudio.com/docs/copilot/chat/mcp-servers)
 
+---
 
-Here's a visual representation of the workflow:
+## ⚙️ How It Works
+
+1. Your org (or you locally) run this MCP server via `server.py`
+2. A developer writes code (e.g. Bicep or Python) in VS Code
+3. The editor is configured to use this MCP server
+4. GitHub Copilot (in **Agent Mode**) calls the MCP tool
+5. The server checks code against enterprise rules using an LLM endpoint
+6. Copilot receives feedback and proposes refactors or improvements
+
+---
+
+### 🖼️ Visual Overview
+
 ![Screenshot](assets/mcp_tool.jpg)
-
 
 ```mermaid
 graph TD
@@ -32,42 +42,62 @@ graph TD
     E -->|"Returns analysis"| C
     C -->|"Returns feedback"| B
     B -->|"Suggests improvements"| A 
-```
+````
 
-# Getting started
+---
 
-## Pre-reqs
-You can either run the server containerized or non-containerized. That is to host the python server, but you'll also need an OpenAI model endpoint somewhere that semantic kernel can call.
+## 🚀 Getting Started
 
-### 1a - Non-containerized
+🛠️ All setup instructions have moved to [**`setup.md` →**](./setup.md)
 
-Make sure you have Python and [UV](https://docs.astral.sh/uv/#__tabbed_1_2) installed. In fact [you can let UV install Python for you](https://docs.astral.sh/uv/guides/install-python/).
+That file includes:
 
-Inside the repository root:
-```
-# initialize a virtual environment
-uv init
+* ✅ System requirements (Python, Git, VS Code, DevContainer, etc.)
+* 🐍 Native (non-container) setup using `venv` and `pip`
+* 🐳 Containerized setup using WSL2 + Docker + DevContainer
+* 🔐 `.env` file setup and configuration
+* ▶️ Commands to launch and verify the server
 
-# activate virtual environment
-source .venv/bin/activate -- OR -- .venv\Scripts\activate.bat
+---
 
-uv sync
-uv run src/server.py
-```
+## 🔌 LLM Configuration (Required)
 
-### 1b - Containerized
+The server uses [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/) to connect to a Large Language Model.
 
-Assuming you have [Windows Subsystem for Linux (WSL)](https://learn.microsoft.com/en-us/windows/wsl/install) installed and [Docker desktop](https://docs.docker.com/desktop/), you'll also need the [DevConatiner extension for VSCode](https://code.visualstudio.com/docs/devcontainers/containers#_installation).
+You'll need a `.env` file like this:
 
-Once you start VSCode in the repository folder, you'll be prompted to restart in DevContainer. Then just use the 'Run MCP server' task to run the server or use the `uv run src/server.py` command.
-
-### 2 - LLM endpoint
-
-The server uses [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/) to call en LLM endpoint. You'll need to be able to copy the `.env.sample` to `.env` and provide values for:
-
-```
+```env
 AZURE_OPENAI_API_KEY=your_api_key_here
 AZURE_OPENAI_ENDPOINT=your_endpoint_here
 AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4-32k_for_example
 AZURE_OPENAI_API_VERSION=2024-05-01-preview_for_example
 ```
+
+Create this by copying the sample:
+
+```bash
+cp .env.sample .env
+```
+
+Then fill in the values for your Azure OpenAI instance.
+
+---
+
+## 🧪 Testing Locally
+
+After setup:
+
+```bash
+python src/server.py
+```
+
+Then open: [http://localhost:8000/mcp/](http://localhost:8000/mcp/)
+You should see the MCP server interface and be ready to integrate with GitHub Copilot.
+
+---
+
+## 📎 Related Links
+
+* [Model Context Protocol Overview](https://modelcontextprotocol.io/introduction)
+* [GitHub Copilot MCP Server Docs](https://code.visualstudio.com/docs/copilot/chat/mcp-servers)
+* [Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/overview/)
