@@ -1,0 +1,319 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>MCP Hackathon Kickoff</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/theme/black.min.css">
+</head>
+
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <section data-markdown>
+                <textarea data-template>
+# 🚀 MCP Hackathon Kickoff
+Bringing Organizational Context to GitHub Copilot with Semantic Kernel
+                </textarea>
+            </section>
+
+            <section data-markdown>
+                <textarea data-template>
+## 🎯 Goal of the Hackathon
+
+- Build an **MCP server** that connects GitHub Copilot to your organization's internal standards
+- Use **Semantic Kernel** to orchestrate calls to GPT-4
+- Improve developer experience by injecting **context** into AI workflows
+                </textarea>
+            </section>
+
+            <section data-markdown>
+                <textarea data-template>
+## 📅 Agenda
+
+1. **Welcome** – Kickoff and expectations
+2. **Deep Dive: MCP** – What is Model Context Protocol?
+3. **Deep Dive: Semantic Kernel** – How to use it with GPT-4
+4. **Time to Code** – Build your MCP server!
+                </textarea>
+            </section>
+
+            <!-- MCP Deep Dive -->
+            <section data-markdown>
+                <textarea data-template>
+## 🔍 Deep Dive: MCP
+                </textarea>
+            </section>
+
+            <section data-markdown>
+                <textarea data-template>
+## Why We're Here
+
+GitHub Copilot + GPT-4 = 💥 powerful autocomplete.
+
+But it has no idea about:
+- your naming conventions
+- your firewall layout
+- your approved services
+- what *your* team considers "good code"
+
+Let's fix that. 🛠️
+                </textarea>
+            </section>
+
+            <section data-markdown>
+                <textarea data-template>
+## What is MCP? 🤔
+
+**Model Context Protocol** (MCP) lets Copilot talk to your own logic engine.
+                    
+```mermaid
+graph TD;
+    A[Editor] --> B[GitHub Copilot Chat];
+    B --> C[MCP Server];
+    C --> D[GPT-4];
+```
+
+Your MCP server holds the brains 🧠 for your org.
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+## What's Broken Without MCP?
+
+Copilot is smart but:
+- Doesn't know your infra patterns
+- Can't flag bad ports or wrong regions
+- Suggests things that might break your compliance
+
+Because it lacks **context**.
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+## MCP Adds That Context 🧩
+
+- Injects org-specific knowledge
+- Validates code
+- Guides GPT-4 with enterprise-aware answers
+
+It's like having your team lead whisper to Copilot.
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+## Where MCP Fits In
+
+```mermaid
+
+graph TD;
+    A[Editor] --> B[GitHub Copilot Chat];
+    B --> C[MCP Server];
+    C --> D[GPT-4];
+```
+
+Your MCP server:
+- Validates
+- Assesses
+- Suggests
+                </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+## JSON Assessment Example 🔍
+
+👈 Copilot sends:
+```json
+{
+  "tool_call": "assess_code_for_enterprise_standards",
+  "params": {
+    "filename": "main.bicep",
+    "language": "bicep",
+    "code": "resource stg 'Microsoft.Storage/storageAccounts@2021-09-01' = { ... }"
+  }
+}
+```
+
+👉 MCP replies:
+
+```json
+{
+  "findings": [
+    {
+      "type": "warning",
+      "message": "Storage accounts should use private endpoints.",
+      "line": 1
+    }
+  ]
+}
+```
+
+            </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+
+## How MCP Teaches Copilot 🧑‍🏫
+
+* Copilot sends a request
+* Your MCP server responds with smart advice
+* Copilot uses that to guide completions
+
+It's plug-and-play mentorship. 
+
+</textarea>
+            </section>
+            <section data-markdown> 
+                <textarea data-template>
+
+## Your MCP Server 🧩
+
+You could implement handlers like:
+
+* `assess_code_for_enterprise_standards`
+* `check_naming_conventions`
+* `generate_module_skeleton`
+
+It's just a JSON API. You can:
+
+* Use FastAPI, Flask, or whatever you like
+* Write in Python, Go, etc. 
+
+</textarea>
+</section>
+            <section data-markdown> <textarea data-template>
+
+## What You'll Build 👷‍♂️
+
+✅ A working MCP server
+✅ One or more handler endpoints
+✅ Valid JSON responses
+
+Bonus points for:
+
+* Real-world org logic
+* Reusable building blocks </textarea> </section>
+            <section data-markdown> <textarea data-template>
+
+## Bonus Tool Examples 🎁
+
+Your MCP server can also:
+
+* `propose_tf_resource_for_scenario`
+* `generate_api_gateway_config`
+* `enforce_subnet_allocation_rules`
+
+Be creative. Be helpful. Be specific. </textarea> </section>
+            <section data-markdown> <textarea data-template>
+
+## The Protocol Basics 📄
+
+* JSON-RPC over HTTP(S)
+* Stateless
+* Request-response pattern
+
+🔗 Spec: [modelcontextprotocol.io](https://modelcontextprotocol.io) </textarea> </section>
+            <section data-markdown> <textarea data-template>
+
+## Build. Wrap. Hack. 🚀
+
+What should Copilot **ask your team**?
+
+YOU decide.
+YOU build it.
+YOU make Copilot *yours*.
+
+Let's MCP this thing. 🧠⚙️ </textarea> </section>
+
+            <!-- Semantic Kernel Deep Dive -->
+            <section data-markdown>
+                <textarea data-template>
+
+## 🧠 Deep Dive: Semantic Kernel
+
+            </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+
+## 🪩 What is Semantic Kernel?
+
+* A .NET/Python SDK to work with LLMs
+* Connects prompts, tools, memory, and code
+* Like a programmable brain for GPT </textarea>
+            </section>
+            <section data-markdown> <textarea data-template>
+
+## 🔧 Sample: Basic Prompt to GPT-4
+
+```python
+import asyncio
+from semantic_kernel.kernel import Kernel
+from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
+
+async def main():
+    kernel = Kernel()
+    kernel.add_chat_service(
+        "gpt-4",
+        AzureChatCompletion(
+            deployment_name="gpt-4",
+            endpoint="https://<your-endpoint>.openai.azure.com/",
+            api_key="<your-api-key>",
+            api_version="2024-05-01-preview",
+        )
+    )
+    prompt = kernel.create_function_from_prompt(
+        plugin_name="hackathon",
+        function_name="simpleQuestion",
+        prompt="What are the security risks of using public IPs?"
+    )
+    result = await kernel.run(prompt)
+    print(result)
+
+asyncio.run(main())
+```
+            </textarea>
+            </section>
+            <section data-markdown>
+                <textarea data-template>
+
+## 🧡 Build Context-Aware Answers
+
+Add plugins, memory, and org knowledge:
+
+* Wrap org policies in a Semantic Kernel function
+* Provide examples and memory for GPT
+* Package it as your MCP server </textarea>
+            </section>
+
+            <!-- Time to Code -->
+            <section data-markdown>
+                <textarea data-template>
+
+## 💻 Time to Code!
+
+* Get into teams
+* Clone the starter repo
+* Start implementing your MCP server using Semantic Kernel
+* Help is available – don't be shy! </textarea>
+            </section>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.2.1/plugin/markdown/markdown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js-mermaid-plugin@11.6.0/plugin/mermaid/mermaid.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            plugins: [RevealMarkdown, RevealMermaid]
+        });
+    </script>
+
+</body>
+
+</html>
