@@ -18,8 +18,13 @@ from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def display_startup_banner():
-    """Display a retro-styled ASCII art banner when the server starts."""
+def display_startup_banner(title_text="MCP", subtitle="Enterprise Standards\nModel Context Protocol Server"):
+    """Display a retro-styled ASCII art banner when the server starts.
+    
+    Args:
+        title_text (str): The main text to display in ASCII art (default: "MCP")
+        subtitle (str): Subtitle text to display below the ASCII art
+    """
     # ANSI color codes for retro styling
     CYAN = '\033[96m'
     MAGENTA = '\033[95m'
@@ -28,23 +33,29 @@ def display_startup_banner():
     BOLD = '\033[1m'
     RESET = '\033[0m'
     
-    # ASCII art banner - easily modifiable
-    banner = f"""
-{CYAN}{BOLD}
- ███▄ ▄███▓ ▄████▄   ██▓███  
-▓██▒▀█▀ ██▒▒██▀ ▀█  ▓██░  ██▒
-▓██    ▓██░▒▓█    ▄ ▓██░ ██▓▒
-▒██    ▒██ ▒▓▓▄ ▄██▒▒██▄█▓▒ ▒
-▒██▒   ░██▒▒ ▓███▀ ░▒██▒ ░  ░
-░ ▒░   ░  ░░ ░▒ ▒  ░▒▓▒░ ░  ░
-░  ░      ░  ░  ▒   ░▒ ░     
-░      ░   ░        ░░       
-       ░   ░ ░               
-           ░                 
-{RESET}{MAGENTA}
-╔═══════════════════════════════════════╗
-║        {YELLOW}Enterprise Standards{MAGENTA}           ║
-║     {GREEN}Model Context Protocol Server{MAGENTA}     ║
+    # Try to use pyfiglet for ASCII art generation, fallback to simple text
+    try:
+        from pyfiglet import Figlet
+        f = Figlet(font='big')  # Use 'big' font for better readability
+        ascii_art = f.renderText(title_text)
+    except ImportError:
+        # Fallback: simple large text representation
+        ascii_art = f"\n{'=' * 50}\n{title_text.center(50)}\n{'=' * 50}\n"
+    
+    # Create the banner with configurable content
+    banner = f"""{CYAN}{BOLD}{ascii_art}{RESET}{MAGENTA}
+╔═══════════════════════════════════════╗"""
+    
+    # Add subtitle lines
+    subtitle_lines = subtitle.split('\n')
+    for line in subtitle_lines:
+        # Truncate long lines to fit the box (39 chars max)
+        if len(line) > 31:
+            line = line[:28] + "..."
+        centered_line = line.center(31)  # 31 chars fit in the box properly
+        banner += f"\n║    {YELLOW}{centered_line}{MAGENTA}    ║"
+    
+    banner += f"""
 ╚═══════════════════════════════════════╝
 {RESET}"""
     
