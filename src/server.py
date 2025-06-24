@@ -18,6 +18,38 @@ from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def display_startup_banner():
+    """Display a retro-styled ASCII art banner when the server starts."""
+    # ANSI color codes for retro styling
+    CYAN = '\033[96m'
+    MAGENTA = '\033[95m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    BOLD = '\033[1m'
+    RESET = '\033[0m'
+    
+    # ASCII art banner - easily modifiable
+    banner = f"""
+{CYAN}{BOLD}
+ ███▄ ▄███▓ ▄████▄   ██▓███  
+▓██▒▀█▀ ██▒▒██▀ ▀█  ▓██░  ██▒
+▓██    ▓██░▒▓█    ▄ ▓██░ ██▓▒
+▒██    ▒██ ▒▓▓▄ ▄██▒▒██▄█▓▒ ▒
+▒██▒   ░██▒▒ ▓███▀ ░▒██▒ ░  ░
+░ ▒░   ░  ░░ ░▒ ▒  ░▒▓▒░ ░  ░
+░  ░      ░  ░  ▒   ░▒ ░     
+░      ░   ░        ░░       
+       ░   ░ ░               
+           ░                 
+{RESET}{MAGENTA}
+╔═══════════════════════════════════════╗
+║        {YELLOW}Enterprise Standards{MAGENTA}           ║
+║     {GREEN}Model Context Protocol Server{MAGENTA}     ║
+╚═══════════════════════════════════════╝
+{RESET}"""
+    
+    print(banner)
+
 mcp = FastMCP(name="enterprise-standards", description="Assesses Azure infrastructure code against enterprise standards.")
 
 # Load environment variables from .env file
@@ -92,5 +124,6 @@ async def assess_code_for_enterprise_standards(
     return result.content
 
 if __name__ == "__main__":
+    display_startup_banner()
     logger.info("Starting server...")
     mcp.run(transport="streamable-http")
