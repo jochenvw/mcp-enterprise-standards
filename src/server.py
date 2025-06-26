@@ -64,7 +64,8 @@ async def assess_code_for_enterprise_standards(
         )
 
         chat_completion = AzureChatCompletion(
-            async_client=azure_client
+            async_client=azure_client,
+            deployment_name=os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
         )
         kernel.add_service(chat_completion)
 
