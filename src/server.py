@@ -16,8 +16,11 @@ from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_
     AzureChatPromptExecutionSettings,
 )
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
+# Configure logging to ensure consistent format across all components
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(levelname)s:%(name)s:%(message)s"
+)
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP(name="enterprise-standards", description="Assesses Azure infrastructure code against enterprise standards.")
@@ -126,4 +129,13 @@ async def assess_code_for_enterprise_standards(
 if __name__ == "__main__":
     logger.info("Starting MCP Enterprise Standards Server")
     logger.info("Transport: streamable-http for GitHub Copilot integration")
+    
+    # Configure uvicorn logging format before starting the server
+    import uvicorn.config
+    
+    # Override uvicorn's default logging config to use consistent format
+    uvicorn_log_config = uvicorn.config.LOGGING_CONFIG
+    uvicorn_log_config["formatters"]["default"]["fmt"] = "%(levelname)s:%(name)s:%(message)s"
+    uvicorn_log_config["formatters"]["access"]["fmt"] = "%(levelname)s:%(name)s:%(message)s"
+    
     mcp.run(transport="streamable-http")
