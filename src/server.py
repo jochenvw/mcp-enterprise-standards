@@ -4,11 +4,13 @@ from typing import Annotated
 import os
 from dotenv import load_dotenv
 import logging
+import httpx
 
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.connectors.ai.function_choice_behavior import FunctionChoiceBehavior
 from semantic_kernel.contents.chat_history import ChatHistory
+from openai.lib.azure import AsyncAzureOpenAI
 
 from semantic_kernel.connectors.ai.open_ai.prompt_execution_settings.azure_chat_prompt_execution_settings import (
     AzureChatPromptExecutionSettings,
@@ -47,49 +49,64 @@ async def assess_code_for_enterprise_standards(
     logger.info("Starting code assessment")
     kernel = Kernel()
 
-    chat_completion = AzureChatCompletion(
-        deployment_name=os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME'),
-        api_key=os.getenv('AZURE_OPENAI_API_KEY'),
-        api_version=os.getenv('AZURE_OPENAI_API_VERSION'),
-        endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
-    )
-    kernel.add_service(chat_completion)
-
-    # Read the system prompt from the file system_prompt - relative to the current file
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    prompt_files = {
-        'system_prompt': 'system_prompt.md',
-        'naming_convention': 'naming_convention.md',
-        'shared_resources': 'shared_resources.md',
-        'security_standards': 'security_standards.md'
-    }
+    # Create custom HTTP client with SSL verification disabled
+    # This is required for enterprise environments with SSL inspection
+    http_client = httpx.AsyncClient(verify=False)
     
-    prompts = {}
-    for key, filename in prompt_files.items():
-        with open(os.path.join(current_dir, filename), "r") as file:
-            prompts[key] = file.read()
-    
-    system_prompt = prompts['system_prompt'].format(
-        naming_convention=prompts['naming_convention'],
-        shared_resources=prompts['shared_resources'],
-        security_standards=prompts['security_standards']
-    )
-    
-    chat_history = ChatHistory()
-    chat_history.add_system_message(system_prompt)
-    chat_history.add_user_message(code)
+    try:
+        # Create Azure OpenAI client with SSL verification disabled
+        azure_client = AsyncAzureOpenAI(
+            azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
+            api_key=os.getenv('AZURE_OPENAI_API_KEY'),
+            api_version=os.getenv('AZURE_OPENAI_API_VERSION'),
+            azure_deployment=os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME'),
+            http_client=http_client
+        )
 
-    execution_settings = AzureChatPromptExecutionSettings()
-    execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
+        chat_completion = AzureChatCompletion(
+            async_client=azure_client,
+            deployment_name=os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+        )
+        kernel.add_service(chat_completion)
 
-    result = await chat_completion.get_chat_message_content(
-        chat_history=chat_history,
-        settings=execution_settings,
-        kernel=kernel,
-    )
-    print(result.content)
-    logger.info("Assessment completed")
-    return result.content
+        # Read the system prompt from the file system_prompt - relative to the current file
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        prompt_files = {
+            'system_prompt': 'system_prompt.md',
+            'naming_convention': 'naming_convention.md',
+            'shared_resources': 'shared_resources.md',
+            'security_standards': 'security_standards.md'
+        }
+        
+        prompts = {}
+        for key, filename in prompt_files.items():
+            with open(os.path.join(current_dir, filename), "r") as file:
+                prompts[key] = file.read()
+        
+        system_prompt = prompts['system_prompt'].format(
+            naming_convention=prompts['naming_convention'],
+            shared_resources=prompts['shared_resources'],
+            security_standards=prompts['security_standards']
+        )
+        
+        chat_history = ChatHistory()
+        chat_history.add_system_message(system_prompt)
+        chat_history.add_user_message(code)
+
+        execution_settings = AzureChatPromptExecutionSettings()
+        execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
+
+        result = await chat_completion.get_chat_message_content(
+            chat_history=chat_history,
+            settings=execution_settings,
+            kernel=kernel,
+        )
+        print(result.content)
+        logger.info("Assessment completed")
+        return result.content
+    finally:
+        # Ensure HTTP client is closed properly
+        await http_client.aclose()
 
 if __name__ == "__main__":
     logger.info("Starting server...")
