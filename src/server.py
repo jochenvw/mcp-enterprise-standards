@@ -24,6 +24,7 @@ mcp = FastMCP(name="enterprise-standards", description="Assesses Azure infrastru
 
 # Load environment variables from .env file
 load_dotenv()
+logger.info("🔧 Environment variables loaded from .env file")
 
 @mcp.tool()
 async def assess_code_for_enterprise_standards(
@@ -46,15 +47,18 @@ async def assess_code_for_enterprise_standards(
         >>> print(result)
         "Assessment of code against enterprise standards..."
     """
-    logger.info("Starting code assessment")
+    logger.info("🚀 Starting enterprise standards assessment")
+    logger.info(f"📝 Code length: {len(code)} characters")
     kernel = Kernel()
 
     # Create custom HTTP client with SSL verification disabled
     # This is required for enterprise environments with SSL inspection
+    logger.info("🔒 Creating HTTP client with SSL verification disabled for enterprise compatibility")
     http_client = httpx.AsyncClient(verify=False)
     
     try:
         # Create Azure OpenAI client with SSL verification disabled
+        logger.info("🤖 Initializing Azure OpenAI client connection")
         azure_client = AsyncAzureOpenAI(
             azure_endpoint=os.getenv('AZURE_OPENAI_ENDPOINT'),
             api_key=os.getenv('AZURE_OPENAI_API_KEY'),
@@ -63,6 +67,7 @@ async def assess_code_for_enterprise_standards(
             http_client=http_client
         )
 
+        logger.info("⚙️ Setting up Semantic Kernel chat completion service")
         chat_completion = AzureChatCompletion(
             async_client=azure_client,
             deployment_name=os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
@@ -70,6 +75,7 @@ async def assess_code_for_enterprise_standards(
         kernel.add_service(chat_completion)
 
         # Read the system prompt from the file system_prompt - relative to the current file
+        logger.info("📄 Loading enterprise standards prompts and templates")
         current_dir = os.path.dirname(os.path.abspath(__file__))
         prompt_files = {
             'system_prompt': 'system_prompt.md',
@@ -80,34 +86,44 @@ async def assess_code_for_enterprise_standards(
         
         prompts = {}
         for key, filename in prompt_files.items():
+            logger.info(f"📖 Reading {filename} for enterprise standards validation")
             with open(os.path.join(current_dir, filename), "r") as file:
                 prompts[key] = file.read()
         
+        logger.info("🔧 Constructing system prompt with enterprise standards")
         system_prompt = prompts['system_prompt'].format(
             naming_convention=prompts['naming_convention'],
             shared_resources=prompts['shared_resources'],
             security_standards=prompts['security_standards']
         )
         
+        logger.info("💬 Preparing chat conversation with enterprise context")
         chat_history = ChatHistory()
         chat_history.add_system_message(system_prompt)
         chat_history.add_user_message(code)
 
+        logger.info("⚡ Configuring execution settings for AI assessment")
         execution_settings = AzureChatPromptExecutionSettings()
         execution_settings.function_choice_behavior = FunctionChoiceBehavior.Auto()
 
+        logger.info("🧠 Sending code to AI for enterprise standards analysis")
         result = await chat_completion.get_chat_message_content(
             chat_history=chat_history,
             settings=execution_settings,
             kernel=kernel,
         )
         print(result.content)
-        logger.info("Assessment completed")
+        logger.info("✅ Enterprise standards assessment completed successfully")
         return result.content
+    except Exception as e:
+        logger.error(f"❌ Assessment failed: {str(e)}")
+        raise
     finally:
         # Ensure HTTP client is closed properly
+        logger.info("🧹 Cleaning up HTTP client connection")
         await http_client.aclose()
 
 if __name__ == "__main__":
-    logger.info("Starting server...")
+    logger.info("🌟 Starting MCP Enterprise Standards Server")
+    logger.info("🔗 Transport: streamable-http for GitHub Copilot integration")
     mcp.run(transport="streamable-http")
